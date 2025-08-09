@@ -120,6 +120,10 @@ UPDATE layoffs_staging2
 SET industry = NULL
 WHERE industry = 'NULL' OR industry = '';
 
+UPDATE layoffs_staging2
+SET funds_raised_millions = NULL
+WHERE funds_raised_millions = 'NULL' OR funds_raised_millions = '';
+
 -- Step 24: Use self-join to fill in missing industries based on company name
 SELECT ls1.company, ls1.industry, ls2.industry
 FROM layoffs_staging2 ls1
@@ -135,6 +139,12 @@ JOIN layoffs_staging2 ls2
 SET ls1.industry = ls2.industry
 WHERE ls1.industry IS NULL
   AND ls2.industry IS NOT NULL;
+
+-- changing datatypes
+ALTER TABLE layoffs_staging2
+  MODIFY COLUMN funds_raised_millions DECIMAL(15,2),
+  MODIFY COLUMN percentage_laid_off DECIMAL(15,2),
+  MODIFY COLUMN total_laid_off DECIMAL(15,2);
 
 -- Step 26: Check if any NULL industries remain
 SELECT industry
